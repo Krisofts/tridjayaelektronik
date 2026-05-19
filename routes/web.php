@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\OverviewController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,11 +20,17 @@ Route::get('/', function () {
 |--------------------------------------------------------------------------
 */
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
+Route::get('/dashboard', [OverviewController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+
+Route::get('/form-elements', function () {
+    return view('pages.form.form-elements', ['title' => 'Form Elements']);
 })
 ->middleware(['auth', 'verified'])
-->name('dashboard');
+->name('form-elements');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +48,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
+
 
     Route::patch('/profile', [ProfileController::class, 'update'])
         ->name('profile.update');
