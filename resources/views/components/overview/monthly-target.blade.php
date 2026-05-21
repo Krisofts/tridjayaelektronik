@@ -1,96 +1,156 @@
 @php
-    function shortNumber($num) {
-        $num = (float) $num;
+    $target            = $summary['target'] ?? 0;
+    $sales             = $summary['sales'] ?? 0;
+    $achievement       = $summary['achievement'] ?? 0;
+    $remainingTarget   = $summary['remaining_target'] ?? 0;
+    $dailyRunRate      = $summary['daily_run_rate'] ?? 0;
+    $projectedClosing  = $summary['projected_closing'] ?? 0;
+    $transactions      = $summary['transactions'] ?? 0;
 
-        if ($num >= 1000000000) {
-            return round($num / 1000000000, 1) . 'M';
-        } elseif ($num >= 1000000) {
-            return round($num / 1000000, 1) . 'Jt';
-        } elseif ($num >= 1000) {
-            return round($num / 1000, 1) . 'K';
-        }
+    $isTargetReached = $projectedClosing >= $target;
 
-        return number_format($num, 0, ',', '.');
-    }
+    $progressWidth = min(max($achievement, 0), 100);
 
-    $sales = $monthly['sales'] ?? 0;
-    $target = $monthly['target'] ?? 0;
-    $progress = min(max($monthly['progress'] ?? 0, 0), 100);
-    $remaining = $monthly['remaining'] ?? 0;
+    $statusLabel = $isTargetReached
+        ? 'On Track'
+        : 'Need Push';
+
+    $statusClasses = $isTargetReached
+        ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400'
+        : 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400';
+
+    $progressClasses = $isTargetReached
+        ? 'bg-emerald-500'
+        : 'bg-amber-500';
 @endphp
 
-<div class="rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/[0.03]">
-    <div class="shadow-default rounded-2xl bg-white px-5 pb-11 pt-5 dark:bg-gray-900 sm:px-6 sm:pt-6">
-        <div class="flex justify-between">
+<div class="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
+
+    <div class="p-5">
+
+        {{-- HEADER --}}
+        <div class="flex items-start justify-between gap-3 mb-5">
+
             <div>
-                <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                    Monthly Target
-                </h3>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Target you’ve set for this month
+                <div class="flex items-center gap-2 mb-1">
+
+                    <h2 class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">
+                        Monthly Target
+                    </h2>
+
+                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium {{ $statusClasses }}">
+                        {{ $statusLabel }}
+                    </span>
+
+                </div>
+
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                    {{ now()->format('F Y') }}
                 </p>
             </div>
 
-            <x-common.dropdown-menu />
-        </div>
+            <div class="text-right">
 
-        {{-- CHART --}}
-        <div class="relative max-h-[195px]">
+                <div class="text-[10px] uppercase tracking-wider text-gray-400 mb-1">
+                    Achievement
+                </div>
 
-            <div id="chartMonthlyTarget" class="h-full"></div>
+                <div class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                    {{ number_format($achievement, 1) }}%
+                </div>
 
-            <span class="absolute left-1/2 top-[65%] -translate-x-1/2 -translate-y-[65%] rounded-full bg-success-50 px-3 py-1 text-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">
-                {{ number_format($progress, 1) }}%
-            </span>
+            </div>
 
-            
-
-        </div>
-
-    
-        {{-- DESCRIPTION --}}
-        <p class="mx-auto mt-3 max-w-[380px] text-center text-sm text-gray-500 sm:text-base">
-            You’ve reached
-            <span class="font-semibold text-gray-800 dark:text-white">
-                $sales
-            </span>
-            this month. Keep pushing your target.
-        </p>
-
-    </div>
-
-    {{-- FOOTER --}}
-    <div class="grid grid-cols-3 divide-x divide-gray-200 dark:divide-gray-800 py-4">
-
-        {{-- TARGET --}}
-        <div class="text-center px-3">
-            <p class="text-xs text-gray-500 dark:text-gray-400">Target</p>
-            <p class="mt-1 text-base font-semibold text-gray-800 dark:text-white/90">
-                 {{ shortNumber($target) }}
-            </p>
         </div>
 
         {{-- SALES --}}
-        <div class="text-center px-3">
-            <p class="text-xs text-gray-500 dark:text-gray-400">Sales</p>
-            <p class="mt-1 text-base font-semibold text-gray-800 dark:text-white/90">
-                 {{ shortNumber($sales) }}
-            </p>
+        <div class="mb-5">
+
+            <div class="text-[10px] uppercase tracking-[0.18em] text-gray-400 mb-2">
+                Current Sales
+            </div>
+
+            <div class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white leading-none">
+                Rp {{ number_format($sales, 0, ',', '.') }}
+            </div>
+
+            <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                Target:
+                <span class="font-medium text-gray-700 dark:text-gray-300">
+                    Rp {{ number_format($target, 0, ',', '.') }}
+                </span>
+            </div>
+
         </div>
 
-        {{-- REMAINING --}}
-        <div class="text-center px-3">
-            <p class="text-xs text-gray-500 dark:text-gray-400">Remaining</p>
-            <p class="mt-1 text-base font-semibold text-gray-800 dark:text-white/90">
-                {{ shortNumber($remaining) }}
-            </p>
+        {{-- PROGRESS --}}
+        <div class="mb-5">
+
+            <div class="h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+                <div
+                    class="h-full rounded-full transition-all duration-700 {{ $progressClasses }}"
+                    style="width: {{ $progressWidth }}%">
+                </div>
+            </div>
+
+            <div class="mt-2 flex items-center justify-between text-[11px]">
+
+                <div class="text-gray-500 dark:text-gray-400">
+                    Remaining
+                </div>
+
+                <div class="font-medium text-gray-900 dark:text-white">
+                    Rp {{ number_format($remainingTarget, 0, ',', '.') }}
+                </div>
+
+            </div>
+
+        </div>
+
+        {{-- STATS --}}
+        <div class="grid grid-cols-3 gap-3">
+
+            {{-- RUN RATE --}}
+            <div class="rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-800/40 p-3">
+
+                <div class="text-[10px] uppercase tracking-wider text-gray-400 mb-1">
+                    Run Rate
+                </div>
+
+                <div class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">
+                    Rp {{ number_format($dailyRunRate, 0, ',', '.') }}
+                </div>
+
+            </div>
+
+            {{-- PROJECTED --}}
+            <div class="rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-800/40 p-3">
+
+                <div class="text-[10px] uppercase tracking-wider text-gray-400 mb-1">
+                    Projection
+                </div>
+
+                <div class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">
+                    Rp {{ number_format($projectedClosing, 0, ',', '.') }}
+                </div>
+
+            </div>
+
+            {{-- TRANSACTIONS --}}
+            <div class="rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-800/40 p-3">
+
+                <div class="text-[10px] uppercase tracking-wider text-gray-400 mb-1">
+                    Transactions
+                </div>
+
+                <div class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">
+                    {{ number_format($transactions) }}
+                </div>
+
+            </div>
+
         </div>
 
     </div>
 
 </div>
-
-{{-- JS DATA --}}
-<script>
-    window.monthlyProgress = @json($progress);
-</script>

@@ -6,37 +6,40 @@
     {{-- TOP LEFT: TODAY SALES --}}
     <div class="col-span-12 xl:col-span-7 space-y-6">
 
-        <x-overview.today-sales :comparison="$comparison" />
-        <x-ecommerce.monthly-sale :monthly="$monthly" />
+        
+
+     <x-overview.today-vs-yesterday />
+       
 
     </div>
 
     {{-- TOP RIGHT: MONTHLY TARGET --}}
     <div class="col-span-12 xl:col-span-5">
-
-        <x-overview.monthly-target :monthly="$monthly" />
+<x-overview.monthly-target />
+        
 
     </div>
 
-    {{-- FULL WIDTH: MONTHLY ALL BRANCH --}}
+    {{-- FULL WIDTH: YEARLY SALES BY MONTH --}}
     <div class="col-span-12">
 
-        
+      
 
+            
     </div>
 
     {{-- BOTTOM LEFT: TOP SALES EMPLOYEE --}}
     <div class="col-span-12 xl:col-span-5">
 
-        <x-overview.top-sales-employees :employees="$topSalesEmployees" />
+       <x-overview.top-sales />
 
     </div>
 
-    {{-- BOTTOM RIGHT --}}
+    {{-- BOTTOM RIGHT: MONTHLY SALES ALL BRANCH --}}
     <div class="col-span-12 xl:col-span-7">
 
-        {{-- widget tambahan (trend / chart / activity) --}}
-<x-overview.monthly-sales-all-branch :branches="$monthlyByDealer" />
+       <x-overview.dealer-sales />
+
     </div>
 
 </div>

@@ -1,32 +1,84 @@
-
 export const initChartThree = () => {
+
     const chartElement = document.querySelector('#chartThree');
 
     if (chartElement) {
+
+        const chartData = JSON.parse(
+            chartElement.dataset.chart || '[]'
+        );
+
+        const categories = chartData.map(item => item.month);
+
+        const salesData = chartData.map(item => item.sales);
+
+        const unitData = chartData.map(item => item.unit);
+
+        // Format angka singkat tanpa .0
+        const formatValue = (number) => {
+            return parseFloat(number.toFixed(1));
+        };
+
+        const formatShortNumber = (value) => {
+
+            if (value >= 1_000_000_000_000) {
+                return formatValue(value / 1_000_000_000_000) + 'T';
+            }
+
+            if (value >= 1_000_000_000) {
+                return formatValue(value / 1_000_000_000) + 'M';
+            }
+
+            if (value >= 1_000_000) {
+                return formatValue(value / 1_000_000) + 'J';
+            }
+
+            if (value >= 1_000) {
+                return formatValue(value / 1_000) + 'K';
+            }
+
+            return value;
+        };
+
         const chartThreeOptions = {
-            series: [{
-                name: "Sales",
-                data: [180, 190, 170, 160, 175, 165, 170, 205, 230, 210, 240, 235],
-            },
-            {
-                name: "Revenue",
-                data: [40, 30, 50, 40, 55, 40, 70, 100, 110, 120, 150, 140],
-            },
+
+            series: [
+                {
+                    name: "Sales",
+                    data: salesData,
+                },
+                {
+                    name: "Unit",
+                    data: unitData,
+                },
             ],
+
             legend: {
-                show: false,
+                show: true,
                 position: "top",
                 horizontalAlign: "left",
             },
+
             colors: ["#465FFF", "#9CB9FF"],
+
             chart: {
                 fontFamily: "Outfit, sans-serif",
                 height: 310,
                 type: "area",
+
                 toolbar: {
                     show: false,
                 },
+
+                dropShadow: {
+                    enabled: true,
+                    top: 2,
+                    left: 0,
+                    blur: 4,
+                    opacity: 0.1,
+                },
             },
+
             fill: {
                 gradient: {
                     enabled: true,
@@ -34,17 +86,17 @@ export const initChartThree = () => {
                     opacityTo: 0,
                 },
             },
+
             stroke: {
-                curve: "straight",
-                width: ["2", "2"],
+                curve: "smooth",
+                lineCap: "round",
+                width: [2, 2],
             },
+
             markers: {
                 size: 0,
             },
-            labels: {
-                show: false,
-                position: "top",
-            },
+
             grid: {
                 xaxis: {
                     lines: {
@@ -57,49 +109,75 @@ export const initChartThree = () => {
                     },
                 },
             },
+
             dataLabels: {
                 enabled: false,
             },
+
             tooltip: {
-                x: {
-                    format: "dd MMM yyyy",
-                },
+                shared: true,
+
+                y: {
+                    formatter: function(value, { seriesIndex }) {
+
+                        if (seriesIndex === 0) {
+                            return 'Rp ' +
+                                new Intl.NumberFormat('id-ID')
+                                    .format(value);
+                        }
+
+                        return new Intl.NumberFormat('id-ID')
+                            .format(value) + ' Unit';
+                    }
+                }
             },
+
             xaxis: {
                 type: "category",
-                categories: [
-                    "Jan",
-                    "Feb",
-                    "Mar",
-                    "Apr",
-                    "May",
-                    "Jun",
-                    "Jul",
-                    "Aug",
-                    "Sep",
-                    "Oct",
-                    "Nov",
-                    "Dec",
-                ],
+
+                categories: categories,
+
                 axisBorder: {
                     show: false,
                 },
+
                 axisTicks: {
                     show: false,
                 },
+
                 tooltip: false,
             },
-            yaxis: {
-                title: {
-                    style: {
-                        fontSize: "0px",
-                    },
+
+            yaxis: [
+                {
+                    labels: {
+                        formatter: function(value) {
+                            return 'Rp ' +
+                                formatShortNumber(value);
+                        }
+                    }
                 },
-            },
+                {
+                    opposite: true,
+
+                    labels: {
+                        formatter: function(value) {
+                            return formatShortNumber(value);
+                        }
+                    }
+                }
+            ],
         };
 
-        const chart = new ApexCharts(chartElement, chartThreeOptions);
+        chartElement.innerHTML = "";
+
+        const chart = new ApexCharts(
+            chartElement,
+            chartThreeOptions
+        );
+
         chart.render();
+
         return chart;
     }
 }

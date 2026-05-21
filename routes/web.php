@@ -1,12 +1,16 @@
 <?php
 
+use App\Http\Controllers\Admin\SalesPerformanceController;
+use App\Http\Controllers\Admin\BranchPerformanceController;
+use App\Http\Controllers\Admin\ProspectController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\OverviewController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Public Route
+| PUBLIC ROUTE
 |--------------------------------------------------------------------------
 */
 
@@ -16,7 +20,7 @@ Route::get('/', function () {
 
 /*
 |--------------------------------------------------------------------------
-| Dashboard (AUTH + VERIFIED)
+| DASHBOARD (AUTH + VERIFIED)
 |--------------------------------------------------------------------------
 */
 
@@ -24,13 +28,13 @@ Route::get('/dashboard', [OverviewController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+/*
+|--------------------------------------------------------------------------
+| AUTH ROUTES (Breeze)
+|--------------------------------------------------------------------------
+*/
 
-Route::get('/form-elements', function () {
-    return view('pages.form.form-elements', ['title' => 'Form Elements']);
-})
-->middleware(['auth', 'verified'])
-->name('form-elements');
-
+require __DIR__.'/auth.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -38,17 +42,16 @@ Route::get('/form-elements', function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | PROFILE
+    | PROFILE (Breeze default)
     |--------------------------------------------------------------------------
     */
 
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
-
 
     Route::patch('/profile', [ProfileController::class, 'update'])
         ->name('profile.update');
@@ -58,33 +61,46 @@ Route::middleware('auth')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | GROUP PROTECTED ROUTE
+    | USER MANAGEMENT (GROUP PROTECTED)
+    | Only: superadmin, owner, hrd
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/admin', function () {
-        return 'Admin Area';
-    })->middleware('group:admin');
+    Route::middleware(['group:superadmin,owner,hrd'])->group(function () {
+        Route::resource('users', UserController::class);
+    });
 
     /*
     |--------------------------------------------------------------------------
-    | PERMISSION PROTECTED ROUTE
+    | SALES / ADMIN FEATURES
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/users', function () {
-        return 'Users List';
-    })->middleware('permission:users.view');
+    Route::get('/sales-performance', [SalesPerformanceController::class, 'index'])
+        ->middleware(['verified'])
+        ->name('sales-performance');
 
-    Route::get('/users/create', function () {
-        return 'Create User';
-    })->middleware('permission:users.create');
+
+         Route::get('/branch-performance', [BranchPerformanceController::class, 'index'])
+        ->middleware(['verified'])
+        ->name('branch-performance');
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROSPECT MANAGEMENT (ADMIN CRM)
+    |--------------------------------------------------------------------------
+    */
+
+   Route::resource('/prospects', ProspectController::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | FORM ELEMENTS (UI TEST)
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/form-elements', function () {
+        return view('pages.form.form-elements', ['title' => 'Form Elements']);
+    })->name('form-elements');
+
 });
-
-/*
-|--------------------------------------------------------------------------
-| AUTH ROUTES (Breeze)
-|--------------------------------------------------------------------------
-*/
-
-require __DIR__.'/auth.php';

@@ -4,51 +4,74 @@ namespace App\Helpers;
 
 class MenuHelper
 {
+    /*
+    |--------------------------------------------------------------------------
+    | CHECK GROUP ACCESS
+    |--------------------------------------------------------------------------
+    */
+    private static function hasGroupAccess(array $groups): bool
+    {
+        $user = auth()->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->inGroup(...$groups);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | MAIN NAV
+    |--------------------------------------------------------------------------
+    */
     public static function getMainNavItems()
     {
-        return [
+        $items = [
             [
                 'icon' => 'dashboard',
                 'name' => 'Dashboard',
                 'subItems' => [
                     ['name' => 'Overview', 'path' => '/dashboard'],
+                    ['name' => 'Sales Performance', 'path' => '/sales-performance'],
+                    ['name' => 'Branch Performance', 'path' => '/branch-performance']
                 ],
-            ],
-            [
-                'icon' => 'calendar',
-                'name' => 'Calendar',
-                'path' => '/calendar',
-            ],
-            [
-                'icon' => 'user-profile',
-                'name' => 'User Profile',
-                'path' => '/profile',
-            ],
-            [
-                'name' => 'Forms',
+            ]
+        ];
+
+        /*
+        |--------------------------------------------------------------------------
+        | HRD MENU (GROUP PROTECTED)
+        |--------------------------------------------------------------------------
+        */
+        if (self::hasGroupAccess(['superadmin', 'owner', 'hrd'])) {
+            $items[] = [
+                'name' => 'HRD',
                 'icon' => 'forms',
                 'subItems' => [
-                    ['name' => 'Form Elements', 'path' => '/form-elements', 'pro' => false],
+                    ['name' => 'Users Management', 'path' => '/users'],
                 ],
-            ],
-            [
-                'name' => 'Tables',
-                'icon' => 'tables',
-                'subItems' => [
-                    ['name' => 'Basic Tables', 'path' => '/basic-tables', 'pro' => false]
-                ],
-            ],
-            [
-                'name' => 'Pages',
-                'icon' => 'pages',
-                'subItems' => [
-                    ['name' => 'Blank Page', 'path' => '/blank', 'pro' => false],
-                    ['name' => '404 Error', 'path' => '/error-404', 'pro' => false]
-                ],
+            ];
+        }
+
+        $items[] = [
+            'name' => 'Laporan',
+            'icon' => 'tables',
+            'subItems' => [
+                ['name' => 'Prospects', 'path' => '/prospects']
             ],
         ];
+
+       
+
+        return $items;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | OTHERS MENU (OPTIONAL FILTER JUGA BISA)
+    |--------------------------------------------------------------------------
+    */
     public static function getOthersItems()
     {
         return [
@@ -83,6 +106,11 @@ class MenuHelper
         ];
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | GROUP MENU WRAPPER
+    |--------------------------------------------------------------------------
+    */
     public static function getMenuGroups()
     {
         return [
@@ -97,10 +125,22 @@ class MenuHelper
         ];
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | ACTIVE CHECK
+    |--------------------------------------------------------------------------
+    */
     public static function isActive($path)
     {
         return request()->is(ltrim($path, '/'));
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | ICONS
+    |--------------------------------------------------------------------------
+    */
+   
 
     public static function getIconSvg($iconName)
     {

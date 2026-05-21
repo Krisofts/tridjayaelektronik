@@ -17,7 +17,7 @@ class SidebarController extends Controller
                         'name' => 'Dashboard',
                         'subItems' => [
                             ['name' => 'Overview Dashboard', 'path' => '/dashboard'],
-                            ['name' => 'Analytics', 'path' => '/analytics'],
+                            ['name' => 'Sales Performance', 'path' => '/sales-performance'],
                             ['name' => 'Marketing', 'path' => '/marketing'],
                             ['name' => 'CRM', 'path' => '/crm'],
                             ['name' => 'Stocks', 'path' => '/stocks'],
