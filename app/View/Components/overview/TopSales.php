@@ -13,14 +13,13 @@ class TopSales extends Component
     public function __construct(
         TopSalesService $service
     ) {
-        $this->sales =
-            $service->getTopSales();
+        $this->sales = $service->getTopSales() ?? [];
     }
 
     public function render(): View
     {
-        return view(
-            'components.overview.top-sales'
-        );
+        return view('components.overview.top-sales', [
+            'sales' => $this->sales
+        ]);
     }
 }
