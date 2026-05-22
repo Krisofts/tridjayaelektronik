@@ -3,42 +3,50 @@
 @section('content')
 <div class="grid grid-cols-12 gap-4 md:gap-6">
 
-    {{-- TOP LEFT: TODAY SALES --}}
+    {{-- ===================== TOP SECTION ===================== --}}
     <div class="col-span-12 xl:col-span-7 space-y-6">
 
-        
-
-     <x-overview.today-vs-yesterday />
-       
+        {{-- Today vs Yesterday Sales --}}
+        <x-overview.today-vs-yesterday />
 
     </div>
 
-    {{-- TOP RIGHT: MONTHLY TARGET --}}
     <div class="col-span-12 xl:col-span-5">
-<x-overview.monthly-target />
-        
+
+        {{-- Monthly Target (placeholder) --}}
+        <div class="rounded-xl border border-gray-200 p-4 bg-white shadow-sm">
+            <p class="text-sm text-gray-500">Monthly Target</p>
+            <p class="text-xs text-gray-400 mt-2">Component coming soon...</p>
+        </div>
 
     </div>
 
-    {{-- FULL WIDTH: YEARLY SALES BY MONTH --}}
+    {{-- ===================== MIDDLE SECTION ===================== --}}
     <div class="col-span-12">
 
-      
+        <div class="rounded-xl border border-gray-200 p-6 bg-white shadow-sm">
+            <p class="text-sm text-gray-500">Yearly Sales By Month</p>
+            <p class="text-xs text-gray-400 mt-2">Component coming soon...</p>
+        </div>
 
-            
     </div>
 
-    {{-- BOTTOM LEFT: TOP SALES EMPLOYEE --}}
+    {{-- ===================== BOTTOM SECTION ===================== --}}
     <div class="col-span-12 xl:col-span-5">
 
-       <x-overview.top-sales />
+        <div class="rounded-xl border border-gray-200 p-4 bg-white shadow-sm">
+            <p class="text-sm text-gray-500">Top Sales Employee</p>
+            <p class="text-xs text-gray-400 mt-2">Component coming soon...</p>
+        </div>
 
     </div>
 
-    {{-- BOTTOM RIGHT: MONTHLY SALES ALL BRANCH --}}
     <div class="col-span-12 xl:col-span-7">
 
-       <x-overview.dealer-sales />
+        <div class="rounded-xl border border-gray-200 p-4 bg-white shadow-sm">
+            <p class="text-sm text-gray-500">Branch Performance</p>
+            <p class="text-xs text-gray-400 mt-2">Component coming soon...</p>
+        </div>
 
     </div>
 

@@ -8,11 +8,10 @@ use Illuminate\View\Component;
 
 class TopSales extends Component
 {
-    public array $sales;
+    public array $sales = [];
 
-    public function __construct(
-        TopSalesService $service
-    ) {
+    public function __construct(TopSalesService $service)
+    {
         $this->sales = $service->getTopSales() ?? [];
     }
 

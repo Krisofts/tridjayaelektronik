@@ -10,8 +10,8 @@ class SalesSummaryService
     public function getTodayVsYesterday(): array
     {
         return Cache::store('redis')->remember(
-            'sales:tvsy:' . now()->format('Y-m-d-H-i'),
-            300,
+            'sales:tvsy:summary', // 🔥 FIX: stable cache key
+            now()->addMinutes(10), // ⏱️ 5–15 menit (rekomendasi 10 menit)
             function () {
 
                 $rows = $this->getSummaryTodayYesterday();
@@ -23,6 +23,7 @@ class SalesSummaryService
                     'today'      => $today,
                     'yesterday'  => $yesterday,
                     'comparison' => $this->buildComparison($today, $yesterday),
+                    'generated_at' => now()->toDateTimeString(),
                 ];
             }
         );
@@ -37,17 +38,11 @@ class SalesSummaryService
 
             SELECT
                 period,
-
                 COUNT(DISTINCT NoTransaksi) AS TotalTransaksi,
-
                 SUM(Jumlah) AS TotalUnit,
-
                 SUM(Jumlah * Harga) AS TotalHarga,
-
                 SUM(Diskon) AS TotalDiskon,
-
                 SUM((Jumlah * Harga) - Diskon) AS TotalSetelahDiskon
-
             FROM (
                 SELECT
                     h.NoTransaksi,
@@ -70,7 +65,6 @@ class SalesSummaryService
                 WHERE h.Tanggal >= @yesterday
                   AND h.Tanggal < @tomorrow
             ) x
-
             GROUP BY period
         ";
 
@@ -130,11 +124,9 @@ class SalesSummaryService
             $current  = (float) ($today[$field] ?? 0);
             $previous = (float) ($yesterday[$field] ?? 0);
 
-            $result[$key . '_diff'] =
-                round($current - $previous, 2);
+            $result[$key . '_diff'] = round($current - $previous, 2);
 
-            $result[$key . '_growth'] =
-                $this->growth($current, $previous);
+            $result[$key . '_growth'] = $this->growth($current, $previous);
         }
 
         return $result;
@@ -146,10 +138,7 @@ class SalesSummaryService
             return $current > 0 ? 100.0 : 0.0;
         }
 
-        return round(
-            (($current - $previous) / $previous) * 100,
-            2
-        );
+        return round((($current - $previous) / $previous) * 100, 2);
     }
 
     private function aov(float $sales, float $transactions): float

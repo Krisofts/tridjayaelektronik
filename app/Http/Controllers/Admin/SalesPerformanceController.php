@@ -12,3 +12,6 @@ class SalesPerformanceController extends Controller
         return view('pages.dashboard.sales-performance');
     }
 }
+
+
+
