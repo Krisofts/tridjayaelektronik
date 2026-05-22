@@ -16,7 +16,7 @@
         {{-- Monthly Target (placeholder) --}}
         <div class="rounded-xl border border-gray-200 p-4 bg-white shadow-sm">
             <p class="text-sm text-gray-500">Monthly Target</p>
-            <p class="text-xs text-gray-400 mt-2">Component coming soon...</p>
+            <p class="text-xs text-gray-400 mt-2"><x-overview.monthly-target /></p>
         </div>
 
     </div>
